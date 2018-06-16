@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="face-api.js"></script>
+  <script src="axios.min.js"></script>
+  <script src="commons.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.css">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+</head>
+<body>
+  <center>
+  <div>
+    <center>
+      <div style="position: fixed;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;top: 1em">
+ 
+        <!-- <video id="video_id" src="media/bbt.mp4" onplay="onPlay(this)" autoplay muted width="600"></video> -->
+ 
+        <link rel="preload" as="video" href="media/bbt.mp4">
+        <video id="video" onplay="onPlay(this)" controls muted width="600"></video>
+        <canvas id="overlay" />
+ 
+      </div>
+      <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+      <div style="height:350px;width:700px;background-color:#eee;overflow-y:scroll;overflow-x:hidden;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;text-align: left" id="results-view"><br><br><br><h3><center>LOADING</center></h3></div>
+    </center>
+  </div>
+  </center>
+  <script>
+
+  video.src = 'media/bbt.mp4';
+  video.play().then(_ => {});
+
+  var init_var = 0.0
+    let minConfidence = 0.5
+    let net, result
+    var result_list = []
+
+     async function onPlay(videoEl) {
+      if(videoEl.paused || videoEl.ended)
+        return false
+
+      const input = new faceapi.NetInput(videoEl)
+      const { width, height } = input
+      const canvas = $('#overlay').get(0)
+      canvas.width = width
+      canvas.height = height
+
+      const ts = Date.now()
+      result = await net.locateFaces(input, minConfidence)      
+      $('#time').val(`${(Date.now() - ts)} ms`)
+      $('#fps').val(`${faceapi.round(1000 / (Date.now() - ts))}`)
+
+      current_time = (Date.now() - ts)
+      current_fps = faceapi.round(1000 / (Date.now() - ts))
+
+      this.result_list.push("<font size='2'><h6><b>Time (ms):</b> " + current_time + "<br><b>Frame #:</b> " + current_fps + "<br><b>Faces in the frame:</b> " + Object.keys(result).length + "<br><b>Faces info:</b> " + JSON.stringify(result) + "</font>");
+      const faceImages = await faceapi.extractFaces(input.canvases[0], result)
+      this.result_list.push("<div style='display:inline-block;margin-left:auto;margin-right: auto;width: 50%'>")
+      faceImages.forEach(function(canvas) {return this.result_list.push(canvas)})
+      this.result_list.push("</div></h6><br><br>")
+
+      if (init_var == 0.0) {
+        $('#results-view').empty();
+        this.init_var += 1
+      }
+
+      $("#results-view").html(result_list)
+      $('#results-view').scrollTop($('#results-view')[0].scrollHeight)
+      setTimeout(() => onPlay(videoEl))
+    }
+
+    async function run() {
+      net = await initFaceDetectionNet()
+    }
+
+    $(document).ready(function() {
+      run()
+    })
+
+  </script>
+</body>
+</html>
