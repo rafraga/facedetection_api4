@@ -13,7 +13,9 @@
   <center>
   <div>
     <center>
-      <div style="position: fixed;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;top: 1em"><video src="media/bbt.mp4" onplay="onPlay(this)" autoplay muted width="600"></video><canvas id="overlay" /></div>
+      <div style="position: fixed;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;top: 1em">
+        <canvas id="overlay" />
+      </div>
       <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
       <div style="height:350px;width:700px;background-color:#eee;overflow-y:scroll;overflow-x:hidden;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;text-align: left" id="results-view"><br><br><br><h3><center>LOADING</center></h3></div>
     </center>
@@ -26,29 +28,34 @@
     var result_list = []
 
      async function onPlay(videoEl) {
-      if(videoEl.paused || videoEl.ended)
-        return false
+      // if(videoEl.paused || videoEl.ended)
+      //   return false
 
       const input = new faceapi.NetInput(videoEl)
-      const { width, height } = input
+
+      // const input = new faceapi.NetInput(videoEl)
+      // const { width, height } = input
       const canvas = $('#overlay').get(0)
-      canvas.width = width
-      canvas.height = height
+      // canvas.width = width
+      // canvas.height = height
 
-      const ts = Date.now()
+      // const ts = Date.now()
       result = await net.locateFaces(input, minConfidence)      
-      $('#time').val(`${(Date.now() - ts)} ms`)
-      $('#fps').val(`${faceapi.round(1000 / (Date.now() - ts))}`)
+      // $('#time').val(`${(Date.now() - ts)} ms`)
+      // $('#fps').val(`${faceapi.round(1000 / (Date.now() - ts))}`)
 
-      current_time = (Date.now() - ts)
-      current_fps = faceapi.round(1000 / (Date.now() - ts))
-      
+      // current_time = (Date.now() - ts)
+      // current_fps = faceapi.round(1000 / (Date.now() - ts))
 
-      this.result_list.push("<font size='2'><h6><b>Time (ms):</b> " + current_time + "<br><b>Frame #:</b> " + current_fps + "<br><b>Faces in the frame:</b> " + Object.keys(result).length + "<br><b>Faces info:</b> " + JSON.stringify(result) + "</font>")
+
+      // this.result_list.push("<font size='2'><h6><b>Time (ms):</b> " + current_time + "<br><b>Frame #:</b> " + current_fps + "<br><b>Faces in the frame:</b> " + Object.keys(result).length + "<br><b>Faces info:</b> " + JSON.stringify(result) + "</font>")
+      this.result_list.push("<font size='2'><h6><b>Faces in the frame:</b> " + Object.keys(result).length + "<br><b>Faces info:</b> " + JSON.stringify(result) + "</font>")
       const faceImages = await faceapi.extractFaces(input.canvases[0], result)
-      console.log(canvas)
+      // const faceImages = await faceapi.extractFaces(input.canvases[0], result)
       this.result_list.push("<div style='display:inline-block;margin-left:auto;margin-right: auto;width: 50%'>")
-      faceImages.forEach(function(canvas) {return this.result_list.push(canvas)})
+      faceImages.forEach(function(canvas) {
+        return this.result_list.push(canvas)
+      })
       this.result_list.push("</div></h6><br><br>")
 
       if (init_var == 0.0) {
@@ -66,6 +73,7 @@
     }
 
     $(document).ready(function() {
+      onPlay("media/bbt.mp4")
       run()
     })
   </script>
