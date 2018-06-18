@@ -13,14 +13,26 @@
   <center>
   <div>
     <center>
-      <div style="position: fixed;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;top: 1em"><video src="media/bbt.mp4" onplay="onPlay(this)" autoplay muted width="600"></video><canvas id="overlay" /></div>
+      <div style="position: fixed;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;top: 1em">
+ 
+        <!-- <video id="video_id" src="media/bbt.mp4" onplay="onPlay(this)" autoplay muted width="600"></video> -->
+ 
+        <link rel="preload" as="video" href="media/bbt.mp4">
+        <video id="video" onplay="onPlay(this)" controls muted width="600"></video>
+        <canvas id="overlay" />
+ 
+      </div>
       <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
       <div style="height:350px;width:700px;background-color:#eee;overflow-y:scroll;overflow-x:hidden;right: 0;left: 0;margin-right: auto;margin-left: auto;min-height: 20em;width: 90%;text-align: left" id="results-view"><br><br><br><h3><center>LOADING</center></h3></div>
     </center>
   </div>
   </center>
   <script>
-    var init_var = 0.0
+
+  video.src = 'media/bbt.mp4';
+  video.play().then(_ => {});
+
+  var init_var = 0.0
     let minConfidence = 0.5
     let net, result
     var result_list = []
@@ -66,6 +78,7 @@
     $(document).ready(function() {
       run()
     })
+
   </script>
 </body>
 </html>
